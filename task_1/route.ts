@@ -3,7 +3,7 @@ const router:Router = express.Router()
 
 router.get('/api', (req: Request, res: Response) => {
     const githubFileURL:string = 'https://github.com/26thavenue/hngX.git'
-    const githubRepoUrl:string = 'https://github.com/26thavenue/hngX/task_1/server.ts.git'
+    const githubRepoUrl:string = 'https://github.com/26thavenue/hngX/blob/main/task_1/server.ts'
 
     const { slackName, track } = req.query;
 
