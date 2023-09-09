@@ -3,7 +3,7 @@ const router:Router = express.Router()
 
 router.get('/api', (req: Request, res: Response) => {
     const githubFileURL:string = 'https://github.com/26thavenue/hngX.git'
-    const githubRepoUrl:string = 'https://github.com/26thavenue/hngX/blob/main/task_1/server.ts'
+    const githubRepoUrl:string = 'https://github.com/26thavenue/hngX/blob/main/task_1/index.ts'
 
     const { slackName, track } = req.query;
 
@@ -28,6 +28,3 @@ router.get('/api', (req: Request, res: Response) => {
 })
 
 export default router
-
-
-

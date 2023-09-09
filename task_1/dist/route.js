@@ -7,10 +7,10 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 router.get('/api', (req, res) => {
     const githubFileURL = 'https://github.com/26thavenue/hngX.git';
-    const githubRepoUrl = 'https://github.com/26thavenue/hngX.git';
+    const githubRepoUrl = 'https://github.com/26thavenue/hngX/blob/main/task_1/server.ts';
     const { slackName, track } = req.query;
     if (!slackName || !track) {
-        res.status(400).json({ error: 'slack_name and track query parameters are required.' });
+        res.json({ error: 'slack_name and track query parameters are required.' });
     }
     const now = new Date();
     const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
