@@ -5,9 +5,9 @@ router.get('/api', (req: Request, res: Response) => {
     const githubFileURL:string = 'https://github.com/26thavenue/hngX.git'
     const githubRepoUrl:string = 'https://github.com/26thavenue/hngX/blob/main/task_1/index.ts'
 
-    const { slackName, track } = req.query;
+    const { slack_name, track } = req.query;
 
-    if (!slackName || !track) {
+    if (!slack_name || !track) {
      res.json({ error: 'slack_name and track query parameters are required.' });
 } 
     const now:Date = new Date();
@@ -15,7 +15,7 @@ router.get('/api', (req: Request, res: Response) => {
     const currentUTC:string = now.toISOString();
     const statusCode = 200
     const response = {
-        slackName,
+        slack_name,
         track,
         currentDay,
         currentUTC,
