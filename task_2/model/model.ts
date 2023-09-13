@@ -1,15 +1,17 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose from "mongoose";
 
-export interface IPerson extends Document {
-  name: string;
-}
-
-export interface SPerson{
-    name:string
-}
-
-const PersonSchema: Schema = new Schema({
-  name: String,
+const userSchema = new mongoose.Schema({
+  name: {
+    required: true,
+    type: String,
+  },
+  id: {
+    type: String,
+    unique: true,
+    immutable: true,
+  }, 
 });
 
-export default mongoose.model<IPerson>('Person', PersonSchema);
+const User = mongoose.model("user", userSchema);
+
+export default User;

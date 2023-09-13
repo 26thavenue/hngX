@@ -1,20 +1,18 @@
 import {Router} from 'express'
 import {
-    getPersons,
-    createPerson,
-    getPerson,
-    updatePerson,
-    deletePerson
+    createUser,
+    readUser,
+    updateUser,
+    deleteUser
 } from '../controller/controller'
 
 const router:Router = Router()
 
 router
-.get('/',getPersons)
-.get('/id',getPerson)
-.post('/',createPerson)
-.put('/id',updatePerson)
-.delete('/id',deletePerson)
+.get('/',createUser)
+.get('/user_id',readUser)
+.put('/user_id',updateUser)
+.delete('/user_id',deleteUser)
 
 
 export default router
