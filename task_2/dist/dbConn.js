@@ -16,11 +16,11 @@ exports.disconnectDB = exports.connectDB = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const { MONGO_URI } = process.env;
+const { MONGODB_URI } = process.env;
 function connectDB() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield mongoose_1.default.connect(MONGO_URI);
+            yield mongoose_1.default.connect(MONGODB_URI);
         }
         catch (err) {
             throw new Error(err);
@@ -37,3 +37,11 @@ function disconnectDB() {
     });
 }
 exports.disconnectDB = disconnectDB;
+// import mongoose from 'mongoose'
+// export const connectDb = async () => {
+//   try {
+//     await mongoose.connect(process.env.MONGO_URI as string);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

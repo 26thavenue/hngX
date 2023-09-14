@@ -1,90 +1,94 @@
 import { Request, Response } from 'express';
 import User from '../model/model';
-import { nanoid } from 'nanoid';
-import type {IUser} from '../types'
+import { isValidObjectId } from "mongoose";
 
 
 export const createUser = async (req: Request, res: Response) => {
-  const details:IUser = req.body
+  const name = req.body?.name?.trim() as string;
 
-  if(!details.name) {
-     return res.status(404).json({error: 'Name is required'})
-  }
-  if (typeof details.name !== 'string') {
-    return res.status(400).json({ error: 'name must be a string' });
-  }
-
-  const checkforDuplicate = details.name
-
-  const duplicate = await User.findOne({checkforDuplicate}).lean().exec();
-
-  if (duplicate) {
-    return res.status(409).json({message: 'Duplicate username'});
-  }
-  
   try {
-    const newUser = {
-        id: nanoid(5),
-        name: details.name as string
-      };
+    if (!name) {
+      return res.status(400).json({ message: "No name was specified!" });
+    } else {
+      const existingUser = await User.findOne({ name });
 
-    const data = await User.create(newUser);
-    return res.json(data);
-} catch (err) {
-    const errorCode = (err as { code: number }).code;
-      if (errorCode && errorCode == 11000) {
-        return res.status(409).json({ error: 'user with slack name exists ' });
+      if (existingUser) {
+        return res.status(409).json({
+          message: "A user with that name already exists",
+        });
+      } else {
+        const { name: username, _id: id } = await new User({ name }).save();
+
+        return res.json({ name: username, id });
       }
-      res.status(500).json({ error: 'unable to process request' });
-
-      console.error(err as string);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
   }
 };
 
 export const readUser= async (req: Request, res: Response) => {
-  const userId:string = req.params.id
+  const id:string = req.params?.id
   try {
-      // get user from db
-      const user = await User.findOne({ id: userId }, { __v: 0, _id: 0 });
+     if (!id) {
+      return res.status(400).json({ message: "There is no id given!" });
+    } else if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid userId" });
+    } else {
+      const returnedUser = await User.findById(id);
 
-      if (!user) {
-        return res.status(404).json({ error: 'user not found' });
+      if (!returnedUser) {
+        return res.status(404).json({
+          message: "This user does not exist",
+        });
+      } else {
+        const { name, _id: id } = returnedUser;
+
+        return res.json({ user: name, id });
       }
-
-      return res.status(200).json(user)
+    }
     } catch (err) {
-      res.status(500).json({ error: 'unable to process request' });
-
       console.error(err as string);
+      return res.status(500).json({ error: 'unable to process request' }); 
     }
 }
 
 export const updateUser = async (req: Request, res: Response) => {
-  const updateDetails = req.body;
-  const userId: string = req.params.id;
-
-  if (!userId) {
-    return res.status(400).json({ error: 'You need an id to erform this operation' });
-  }
-
-  if (!updateDetails.name) {
-    return res.status(400).json({ error: 'The name field is empty' });
-  }
+  const updateDetails = req.body?.name?.trim() as string;
+  const id= req.params?.id.trim();
 
   try {
-    const data = await User.findOneAndUpdate(
-      { id: userId },
-      { name: updateDetails.name },
-      { new: true }
-    );
-
-    if (!data) {
-      return res.status(404).json({ error: 'User does not exist' });
+    if (!id) {
+    return res.status(400).json({ error: 'You need an id to perform this operation' });
+    } 
+    else if (!isValidObjectId(id)) {
+        return res.status(400).json({ message: "Invalid Id" });
     }
+    else if (!updateDetails) {
+      return res.status(400).json({ error: 'The name field is empty' });
+    }
+    else{
+      const checkDuplicateNme = await User.findOne({ name: updateDetails });
+      if (checkDuplicateNme) {
+        return res.status(409).json("This target name already exists");
+      } else {
+        const updatedUser = await User.findByIdAndUpdate(
+          { _id: id },
+          { name: updateDetails }
+        );
 
-    return res
-      .status(200)
-      .json({ messsage: `User updated with ${userId} was updated`});
+        if (!updatedUser) {
+          return res.status(404).json({
+            message: "ID does not exist",
+          });
+        } else {
+          const { _id: id } = updatedUser;
+
+          res.json({ name: updateDetails, id });
+        }
+      }
+    }
   } catch (err) {
     res.status(500).json({ error: 'There is an error with the server' });
 
@@ -93,17 +97,22 @@ export const updateUser = async (req: Request, res: Response) => {
 }  
 
 export const deleteUser = async (req: Request, res: Response) => {
-    const userId: string = req.params.id;
-    console.log(userId);
-
+  const id: string = req.params?.id;
   try {
-    const data = await User.findOneAndDelete({ id: userId });
+    if (!id) {
+      return res.status(400).json({ message: "There is no id given!" });
+    } else if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid userId" });
+    } else {
+      const data = await User.findByIdAndDelete(id);
 
-    if (data == null) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    return res.status(200).json({ message: `User with ${userId} has been deleted` });
+        if (!data) {
+          return res.status(404).json({ error: 'User not found' });
+        }else{
+          return res.status(200).json({ message: `User with id: ${id} has been succesfully deleted` });
+        }
+    
+  }
   } catch (err) {
     res.status(500).json({ error: 'There is an error with the server' });
     console.error(err as string);

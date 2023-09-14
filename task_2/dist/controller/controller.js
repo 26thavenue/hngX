@@ -14,71 +14,94 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.updateUser = exports.readUser = exports.createUser = void 0;
 const model_1 = __importDefault(require("../model/model"));
-const nanoid_1 = require("nanoid");
+const mongoose_1 = require("mongoose");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const details = req.body;
-    if (!details.name) {
-        return res.status(404).json({ error: 'Name is required' });
-    }
-    if (typeof details.name !== 'string') {
-        return res.status(400).json({ error: 'name must be a string' });
-    }
-    const checkforDuplicate = details.name;
-    const duplicate = yield model_1.default.findOne({ checkforDuplicate }).lean().exec();
-    if (duplicate) {
-        return res.status(409).json({ message: 'Duplicate username' });
-    }
+    var _a, _b;
+    const name = (_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.name) === null || _b === void 0 ? void 0 : _b.trim();
     try {
-        const newUser = {
-            id: (0, nanoid_1.nanoid)(5),
-            name: details.name
-        };
-        const data = yield model_1.default.create(newUser);
-        return res.json(data);
-    }
-    catch (err) {
-        const errorCode = err.code;
-        if (errorCode && errorCode == 11000) {
-            return res.status(409).json({ error: 'user with slack name exists ' });
+        if (!name) {
+            return res.status(400).json({ message: "No name was specified!" });
         }
-        res.status(500).json({ error: 'unable to process request' });
-        console.error(err);
+        else {
+            const existingUser = yield model_1.default.findOne({ name });
+            if (existingUser) {
+                return res.status(409).json({
+                    message: "A user with that name already exists",
+                });
+            }
+            else {
+                const { name: username, _id: id } = yield new model_1.default({ name }).save();
+                return res.json({ name: username, id });
+            }
+        }
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Something went wrong" });
     }
 });
 exports.createUser = createUser;
 const readUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.id;
+    var _c;
+    const id = (_c = req.params) === null || _c === void 0 ? void 0 : _c.id;
     try {
-        // get user from db
-        const user = yield model_1.default.findOne({ id: userId }, { __v: 0, _id: 0 });
-        if (!user) {
-            return res.status(404).json({ error: 'user not found' });
+        if (!id) {
+            return res.status(400).json({ message: "There is no id given!" });
         }
-        return res.status(200).json(user);
+        else if (!(0, mongoose_1.isValidObjectId)(id)) {
+            return res.status(400).json({ message: "Invalid userId" });
+        }
+        else {
+            const returnedUser = yield model_1.default.findById(id);
+            if (!returnedUser) {
+                return res.status(404).json({
+                    message: "This user does not exist",
+                });
+            }
+            else {
+                const { name, _id: id } = returnedUser;
+                return res.json({ user: name, id });
+            }
+        }
     }
     catch (err) {
-        res.status(500).json({ error: 'unable to process request' });
         console.error(err);
+        return res.status(500).json({ error: 'unable to process request' });
     }
 });
 exports.readUser = readUser;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const updateDetails = req.body;
-    const userId = req.params.id;
-    if (!userId) {
-        return res.status(400).json({ error: 'You need an id to erform this operation' });
-    }
-    if (!updateDetails.name) {
-        return res.status(400).json({ error: 'The name field is empty' });
-    }
+    var _d, _e, _f;
+    const updateDetails = (_e = (_d = req.body) === null || _d === void 0 ? void 0 : _d.name) === null || _e === void 0 ? void 0 : _e.trim();
+    const id = (_f = req.params) === null || _f === void 0 ? void 0 : _f.id.trim();
     try {
-        const data = yield model_1.default.findOneAndUpdate({ id: userId }, { name: updateDetails.name }, { new: true });
-        if (!data) {
-            return res.status(404).json({ error: 'User does not exist' });
+        if (!id) {
+            return res.status(400).json({ error: 'You need an id to perform this operation' });
         }
-        return res
-            .status(200)
-            .json({ messsage: `User updated with ${userId} was updated` });
+        else if (!(0, mongoose_1.isValidObjectId)(id)) {
+            return res.status(400).json({ message: "Invalid Id" });
+        }
+        else if (!updateDetails) {
+            return res.status(400).json({ error: 'The name field is empty' });
+        }
+        else {
+            const checkDuplicateNme = yield model_1.default.findOne({ name: updateDetails });
+            if (checkDuplicateNme) {
+                return res.status(409).json("This target name already exists");
+            }
+            else {
+                const updatedUser = yield model_1.default.findByIdAndUpdate({ _id: id }, { name: updateDetails });
+                if (!updatedUser) {
+                    return res.status(404).json({
+                        message: "ID does not exist",
+                    });
+                }
+                else {
+                    const { _id: id } = updatedUser;
+                    res.json({ name: updateDetails, id });
+                }
+            }
+        }
     }
     catch (err) {
         res.status(500).json({ error: 'There is an error with the server' });
@@ -87,14 +110,24 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.id;
-    console.log(userId);
+    var _g;
+    const id = (_g = req.params) === null || _g === void 0 ? void 0 : _g.id;
     try {
-        const data = yield model_1.default.findOneAndDelete({ id: userId });
-        if (data == null) {
-            return res.status(404).json({ error: 'User not found' });
+        if (!id) {
+            return res.status(400).json({ message: "There is no id given!" });
         }
-        return res.status(200).json({ message: `User with ${userId} has been deleted` });
+        else if (!(0, mongoose_1.isValidObjectId)(id)) {
+            return res.status(400).json({ message: "Invalid userId" });
+        }
+        else {
+            const data = yield model_1.default.findByIdAndDelete(id);
+            if (!data) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            else {
+                return res.status(200).json({ message: `User with ${id} has been deleted` });
+            }
+        }
     }
     catch (err) {
         res.status(500).json({ error: 'There is an error with the server' });

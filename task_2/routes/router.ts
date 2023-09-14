@@ -8,11 +8,10 @@ import {
 
 const router:Router = Router()
 
-router
-.get('/',createUser)
-.get('/user_id',readUser)
-.put('/user_id',updateUser)
-.delete('/user_id',deleteUser)
+router.post('/',createUser)
+router.get('/:id',readUser)
+router.put('/:id',updateUser)
+router.delete('/:id',deleteUser)
 
 
 export default router
