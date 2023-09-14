@@ -16,7 +16,7 @@ This backend project is created to serve an A.P.I using the R.E.S.T protocool. C
   <br>
 
 - <b>URL</b>
-  https://hngx-stage2.onrender.com/api
+  https://hngx-second-task.onrender.com/api
 
 <br>
 
@@ -54,7 +54,7 @@ If the name is not already in use, you should get the name and an id as successf
   <br>
 
 - <b>URL</b>
-  https://hngx-stage2.onrender.com/api/id
+  https://hngx-second-task.onrender.com/api/id
 
 If the id exists, you should get the name and id as successful response.
 
@@ -78,7 +78,7 @@ If the id exists, you should get the name and id as successful response.
   <br>
 
 - <b>URL</b>
-  https://hngx-stage2.onrender.com/api/valid_user_id
+  https://hngx-second-task.onrender.com/api/id
 
  <br>
 
@@ -112,7 +112,7 @@ If the id exists and the new name isn't taken already, you should get the name a
   <br>
 
 - <b>URL</b>
-  https://hngx-stage2.onrender.com/api/valid_user_id
+  https://hngx-second-task.onrender.com/api/id
 
 <br>
 
