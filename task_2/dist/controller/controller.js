@@ -16,8 +16,9 @@ exports.deleteUser = exports.updateUser = exports.readUser = exports.createUser 
 const model_1 = __importDefault(require("../model/model"));
 const mongoose_1 = require("mongoose");
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
-    const name = (_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.name) === null || _b === void 0 ? void 0 : _b.trim();
+    var _a;
+    const receivedParam = (_a = req.body) === null || _a === void 0 ? void 0 : _a.name;
+    const name = receivedParam === null || receivedParam === void 0 ? void 0 : receivedParam.trim();
     try {
         if (!name) {
             return res.status(400).json({ message: "No name was specified!" });
@@ -42,8 +43,8 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createUser = createUser;
 const readUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c;
-    const id = (_c = req.params) === null || _c === void 0 ? void 0 : _c.id;
+    var _b;
+    const id = (_b = req.params) === null || _b === void 0 ? void 0 : _b.id;
     try {
         if (!id) {
             return res.status(400).json({ message: "There is no id given!" });
@@ -71,9 +72,9 @@ const readUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.readUser = readUser;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f;
-    const updateDetails = (_e = (_d = req.body) === null || _d === void 0 ? void 0 : _d.name) === null || _e === void 0 ? void 0 : _e.trim();
-    const id = (_f = req.params) === null || _f === void 0 ? void 0 : _f.id.trim();
+    var _c, _d, _e;
+    const updateDetails = (_d = (_c = req.body) === null || _c === void 0 ? void 0 : _c.name) === null || _d === void 0 ? void 0 : _d.trim();
+    const id = (_e = req.params) === null || _e === void 0 ? void 0 : _e.id.trim();
     try {
         if (!id) {
             return res.status(400).json({ error: 'You need an id to perform this operation' });
@@ -110,8 +111,8 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g;
-    const id = (_g = req.params) === null || _g === void 0 ? void 0 : _g.id;
+    var _f;
+    const id = (_f = req.params) === null || _f === void 0 ? void 0 : _f.id;
     try {
         if (!id) {
             return res.status(400).json({ message: "There is no id given!" });
@@ -125,7 +126,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 return res.status(404).json({ error: 'User not found' });
             }
             else {
-                return res.status(200).json({ message: `User with ${id} has been deleted` });
+                return res.status(200).json({ message: `User with id: ${id} has been succesfully deleted` });
             }
         }
     }

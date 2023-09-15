@@ -51,4 +51,4 @@ To see guidance on how to use the API, request/response formats and sample usage
 
 <br>
 
-[API DOCUMENTATION →] (./DOCUMENTATION.md)
+[API DOCUMENTATION →](./DOCUMENTATION.md)

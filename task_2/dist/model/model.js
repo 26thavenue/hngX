@@ -9,7 +9,7 @@ const userSchema = new mongoose_2.Schema({
     name: {
         type: String,
         required: true,
-        unique: false,
+        unique: true,
     },
 });
 const User = mongoose_1.default.model("user", userSchema);

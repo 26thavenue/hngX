@@ -4,7 +4,8 @@ import { isValidObjectId } from "mongoose";
 
 
 export const createUser = async (req: Request, res: Response) => {
-  const name = req.body?.name?.trim() as string;
+   const receivedParam = req.body?.name as string;
+   const name = receivedParam?.trim();
 
   try {
     if (!name) {
